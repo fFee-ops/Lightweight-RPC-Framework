@@ -27,12 +27,19 @@ public class RpcServer {
         threadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, workingQueue, threadFactory);
     }
 
+    /**
+     * 让一个接口注册进来，便于调用，在后续会用nacos代替
+     *
+     * @param service 接口
+     * @param port    端口
+     */
     public void register(Object service, int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             logger.info("服务器正在启动...");
             Socket socket;
             while ((socket = serverSocket.accept()) != null) {
                 logger.info("客户端连接！Ip为：" + socket.getInetAddress());
+                //监听到连接后就交给工作线程去执行业务逻辑
                 threadPool.execute(new WorkerThread(socket, service));
             }
         } catch (Exception e) {

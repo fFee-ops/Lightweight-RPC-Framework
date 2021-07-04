@@ -37,8 +37,9 @@ public class WorkerThread implements Runnable {
              ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream())) {
 
             RpcRequest rpcRequest = (RpcRequest) objectInputStream.readObject();
+            //根据传过来的参数找到对应的方法所在的类
             Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
-
+            //根据方法的参数，找到具体的那个方法，并且执行他，invoke动态代理会直接执行对应的方法
             Object returnObject = method.invoke(service, rpcRequest.getParameters());
             objectOutputStream.writeObject(RpcResponse.success(returnObject));
             objectOutputStream.flush();
