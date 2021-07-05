@@ -1,4 +1,4 @@
-package registry;
+package com.sl.registry;
 
 /**
  * Created by yazai

@@ -1,4 +1,4 @@
-package server;
+package com.sl;
 
 import entity.RpcRequest;
 import entity.RpcResponse;

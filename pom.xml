@@ -12,9 +12,6 @@
         <module>rpc-api</module>
         <module>rpc-core</module>
         <module>rpc-common</module>
-        <module>test-client</module>
-        <module>test-server</module>
-        <module>test-server</module>
     </modules>
 
     <dependencies>
@@ -26,6 +23,11 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.43.Final</version>
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>

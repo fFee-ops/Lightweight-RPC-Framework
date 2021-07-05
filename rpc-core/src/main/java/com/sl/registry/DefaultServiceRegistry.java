@@ -1,4 +1,4 @@
-package registry;
+package com.sl.registry;
 
 import enumeration.RpcError;
 import exception.RpcException;
@@ -18,11 +18,11 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     private static final Logger logger = LoggerFactory.getLogger(DefaultServiceRegistry.class);
 
     //存放了：服务名与提供服务的对象的对应关系
-    private final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
+    private static final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
 
     //存放了：当前有哪些对象已经被注册
     //newKeySet()：创建一个由ConcurrentHashMap支持的ConcurrentHashSet
-    private final Set<String> registeredService = ConcurrentHashMap.newKeySet();
+    private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     @Override
     public <T> void register(T service) {

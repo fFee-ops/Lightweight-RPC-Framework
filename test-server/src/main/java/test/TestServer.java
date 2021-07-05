@@ -1,9 +1,9 @@
 package test;
 
 import com.sl.api.HelloService;
-import registry.DefaultServiceRegistry;
-import registry.ServiceRegistry;
-import server.RpcServer;
+import com.sl.registry.DefaultServiceRegistry;
+import com.sl.registry.ServiceRegistry;
+import com.sl.socket.server.SocketServer;
 
 /**
  * Created by yazai
@@ -14,7 +14,7 @@ public class TestServer {
         HelloService helloService = new HelloServiceImpl();
         ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
         serviceRegistry.register(helloService);
-        RpcServer rpcServer = new RpcServer(serviceRegistry);
-        rpcServer.start(9000);
+        SocketServer socketServer = new SocketServer(serviceRegistry);
+        socketServer.start(9000);
     }
 }

@@ -1,8 +1,10 @@
-package server;
+package com.sl.socket.server;
 
+import com.sl.RpcServer;
+import com.sl.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import registry.ServiceRegistry;
+import com.sl.registry.ServiceRegistry;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -12,11 +14,11 @@ import java.util.concurrent.*;
 /**
  * Created by yazai
  * Date: 下午3:07 2021/7/4
- * 远程方法调用的提供者（服务端）
+ * Socket方式远程方法调用的提供者（服务端）
  */
-public class RpcServer {
+public class SocketServer implements RpcServer {
 
-    private static final Logger logger = LoggerFactory.getLogger(RpcServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
     private static final int CORE_POOL_SIZE = 5;
     private static final int MAXIMUM_POOL_SIZE = 50;
     private static final int KEEP_ALIVE_TIME = 60;
@@ -29,7 +31,7 @@ public class RpcServer {
     //在创建 RpcServer 时需要传入一个已经注册好服务的 ServiceRegistry
     private final ServiceRegistry serviceRegistry;
 
-    public RpcServer(ServiceRegistry serviceRegistry) {
+    public SocketServer(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         BlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
         ThreadFactory threadFactory = Executors.defaultThreadFactory();
@@ -41,6 +43,7 @@ public class RpcServer {
      *
      * @param port
      */
+    @Override
     public void start(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             logger.info("服务器启动……");
