@@ -4,6 +4,7 @@ import com.sl.RpcServer;
 import com.sl.codec.CommonDecoder;
 import com.sl.codec.CommonEncoder;
 import com.sl.serializer.JsonSerializer;
+import com.sl.serializer.KryoSerializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -40,7 +41,8 @@ public class NettyServer implements RpcServer {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
-                            pipeline.addLast(new CommonEncoder(new JsonSerializer()));
+                            //切换这里就能切换序列化/反序列化器的类型
+                            pipeline.addLast(new CommonEncoder(new KryoSerializer()));
                             pipeline.addLast(new CommonDecoder());
                             pipeline.addLast(new NettyServerHandler());
                         }
