@@ -1,6 +1,8 @@
-package com.sl.socket.server;
+package com.sl.transport.socket.server;
 
-import com.sl.RequestHandler;
+import com.sl.handler.RequestHandler;
+import com.sl.serializer.CommonSerializer;
+import com.sl.transport.util.ObjectWriter;
 import entity.RpcRequest;
 import entity.RpcResponse;
 import org.slf4j.Logger;
@@ -23,11 +25,13 @@ public class RequestHandlerThread implements Runnable {
     private Socket socket;
     private RequestHandler requestHandler;
     private ServiceRegistry serviceRegistry;
+    private CommonSerializer serializer;
 
-    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, ServiceRegistry serviceRegistry) {
+    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, ServiceRegistry serviceRegistry, CommonSerializer serializer) {
         this.socket = socket;
         this.requestHandler = requestHandler;
         this.serviceRegistry = serviceRegistry;
+        this.serializer = serializer;
     }
 
     @Override
@@ -39,12 +43,10 @@ public class RequestHandlerThread implements Runnable {
             //解析出rpcRequest
             RpcRequest rpcRequest = (RpcRequest) objectInputStream.readObject();
             String interfaceName = rpcRequest.getInterfaceName();
-            //获得服务对象
-            Object service = serviceRegistry.getService(interfaceName);
             //真正进行逻辑处理的地方
-            Object result = requestHandler.handle(rpcRequest, service);
-            objectOutputStream.writeObject(RpcResponse.success(result));
-            objectOutputStream.flush();
+            Object result = requestHandler.handle(rpcRequest);
+            RpcResponse<Object> response = RpcResponse.success(result, rpcRequest.getRequestId());
+            ObjectWriter.writeObject(objectOutputStream, response, serializer);
 
         } catch (Exception e) {
             logger.error("调用或发送时有错误发生：", e);

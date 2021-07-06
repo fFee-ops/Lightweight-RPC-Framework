@@ -1,10 +1,16 @@
-package com.sl.netty.server;
+package com.sl.transport.netty.server;
 
-import com.sl.RpcServer;
+import com.sl.provider.ServiceProvider;
+import com.sl.provider.ServiceProviderImpl;
+import com.sl.registry.NacosServiceRegistry;
+import com.sl.registry.ServiceRegistry;
+import com.sl.serializer.CommonSerializer;
+import com.sl.transport.RpcServer;
 import com.sl.codec.CommonDecoder;
 import com.sl.codec.CommonEncoder;
-import com.sl.serializer.JsonSerializer;
 import com.sl.serializer.KryoSerializer;
+import enumeration.RpcError;
+import exception.RpcException;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -15,6 +21,8 @@ import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
+
 /**
  * Created by yazai
  * Date: 20:59 2021/7/5
@@ -23,9 +31,39 @@ import org.slf4j.LoggerFactory;
 public class NettyServer implements RpcServer {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
+    private final String host;
+    private final int port;
+
+    private final ServiceRegistry serviceRegistry;
+    private final ServiceProvider serviceProvider;
+    public NettyServer(String host, int port) {
+        this.host = host;
+        this.port = port;
+        serviceRegistry = new NacosServiceRegistry();
+        serviceProvider = new ServiceProviderImpl();
+    }
+
+    private CommonSerializer serializer;
+
+    /**
+     * 用于向 Nacos 注册服务
+     * @param service
+     * @param serviceClass
+     * @param <T>
+     */
+    @Override
+    public <T> void publishService(Object service, Class<T> serviceClass) {
+        if(serializer == null) {
+            logger.error("未设置序列化器");
+            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
+        }
+        serviceProvider.addServiceProvider(service);
+        serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
+        start();
+    }
 
     @Override
-    public void start(int port) {
+    public void start() {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -42,7 +80,7 @@ public class NettyServer implements RpcServer {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
                             //切换这里就能切换序列化/反序列化器的类型
-                            pipeline.addLast(new CommonEncoder(new KryoSerializer()));
+                            pipeline.addLast(new CommonEncoder(serializer));
                             pipeline.addLast(new CommonDecoder());
                             pipeline.addLast(new NettyServerHandler());
                         }
@@ -57,6 +95,11 @@ public class NettyServer implements RpcServer {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer=serializer;
     }
 
 }

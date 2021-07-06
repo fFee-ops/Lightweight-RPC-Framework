@@ -16,6 +16,12 @@ import java.io.Serializable;
 @Builder
 public class RpcRequest implements Serializable {
     public RpcRequest() {}
+
+    /**
+     * 请求号
+     * 为每个请求加上了请求号，客户端在调用后会检查响应与请求的请求号
+     */
+    private String requestId;
     /**
      * 待调用接口名称
      */

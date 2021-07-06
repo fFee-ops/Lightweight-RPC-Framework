@@ -1,8 +1,8 @@
 package test;
 
 import com.sl.api.HelloService;
-import com.sl.netty.server.NettyServer;
-import com.sl.registry.DefaultServiceRegistry;
+import com.sl.serializer.ProtobufSerializer;
+import com.sl.transport.netty.server.NettyServer;
 import com.sl.registry.ServiceRegistry;
 
 /**
@@ -13,9 +13,8 @@ import com.sl.registry.ServiceRegistry;
 public class NettyTestServer {
     public static void main(String[] args) {
         HelloService helloService = new HelloServiceImpl();
-        ServiceRegistry registry = new DefaultServiceRegistry();
-        registry.register(helloService);
-        NettyServer server = new NettyServer();
-        server.start(9999);
+        NettyServer server = new NettyServer("127.0.0.1", 9999);
+        server.setSerializer(new ProtobufSerializer());
+        server.publishService(helloService, HelloService.class);
     }
 }

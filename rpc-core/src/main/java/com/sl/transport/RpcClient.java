@@ -1,5 +1,6 @@
-package com.sl;
+package com.sl.transport;
 
+import com.sl.serializer.CommonSerializer;
 import entity.RpcRequest;
 
 /**
@@ -9,4 +10,10 @@ import entity.RpcRequest;
  */
 public interface RpcClient {
     Object sendRequest(RpcRequest rpcRequest);
+
+    /**
+     * 设置序列化器
+     * @param serializer
+     */
+    void setSerializer(CommonSerializer serializer);
 }

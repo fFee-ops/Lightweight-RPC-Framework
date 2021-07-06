@@ -1,9 +1,10 @@
 package com.sl;
 
-import com.sl.RpcClientProxy;
 import com.sl.api.HelloObject;
 import com.sl.api.HelloService;
-import com.sl.socket.client.SocketClient;
+import com.sl.serializer.KryoSerializer;
+import com.sl.transport.RpcClientProxy;
+import com.sl.transport.socket.client.SocketClient;
 
 /**
  * Created by yazai
@@ -11,7 +12,8 @@ import com.sl.socket.client.SocketClient;
  */
 public class TestClient {
     public static void main(String[] args) {
-        SocketClient client = new SocketClient("127.0.0.1", 9000);
+        SocketClient client = new SocketClient();
+        client.setSerializer(new KryoSerializer());
         RpcClientProxy proxy = new RpcClientProxy(client);
         /*
           这里是客户端，没有HelloService的实现类，但是我又需要调用它的方法，所以就需要用到JDK动态代理

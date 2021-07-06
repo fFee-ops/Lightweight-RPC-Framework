@@ -1,4 +1,4 @@
-package com.sl.registry;
+package com.sl.provider;
 
 import enumeration.RpcError;
 import exception.RpcException;
@@ -14,8 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Date: 22:35 2021/7/4
  * Description:默认的服务注册表
  */
-public class DefaultServiceRegistry implements ServiceRegistry {
-    private static final Logger logger = LoggerFactory.getLogger(DefaultServiceRegistry.class);
+public class ServiceProviderImpl implements ServiceProvider {
+    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderImpl.class);
 
     //存放了：服务名与提供服务的对象的对应关系
     private static final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
@@ -25,7 +25,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     @Override
-    public <T> void register(T service) {
+    public <T> void addServiceProvider(T service) {
         String serviceName = service.getClass().getCanonicalName();
 
         //已经被注册了，直接返回
@@ -51,7 +51,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
      * @return
      */
     @Override
-    public Object getService(String serviceName) {
+    public Object getServiceProvider(String serviceName) {
         Object service = serviceMap.get(serviceName);
         if (service == null) {
             throw new RpcException(RpcError.SERVICE_NOT_FOUND);
