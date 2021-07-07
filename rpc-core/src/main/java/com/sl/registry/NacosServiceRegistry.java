@@ -42,6 +42,7 @@ public class NacosServiceRegistry implements ServiceRegistry {
     public void register(String serviceName, InetSocketAddress inetSocketAddress) {
         try {
             namingService.registerInstance(serviceName, inetSocketAddress.getHostName(), inetSocketAddress.getPort());
+            logger.info("向nacos注册服务成功");
         } catch (NacosException e) {
             logger.error("注册服务时有错误发生:", e);
             throw new RpcException(RpcError.REGISTER_SERVICE_FAILED);
@@ -57,6 +58,7 @@ public class NacosServiceRegistry implements ServiceRegistry {
     public InetSocketAddress lookupService(String serviceName) {
         try {
             List<Instance> instances = namingService.getAllInstances(serviceName);
+            //拿到具体实例
             Instance instance = instances.get(0);
             return new InetSocketAddress(instance.getIp(), instance.getPort());
         } catch (NacosException e) {

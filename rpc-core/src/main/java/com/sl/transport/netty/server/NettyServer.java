@@ -36,6 +36,7 @@ public class NettyServer implements RpcServer {
 
     private final ServiceRegistry serviceRegistry;
     private final ServiceProvider serviceProvider;
+
     public NettyServer(String host, int port) {
         this.host = host;
         this.port = port;
@@ -47,17 +48,22 @@ public class NettyServer implements RpcServer {
 
     /**
      * 用于向 Nacos 注册服务
+     *
      * @param service
      * @param serviceClass
      * @param <T>
      */
     @Override
     public <T> void publishService(Object service, Class<T> serviceClass) {
-        if(serializer == null) {
+        if (serializer == null) {
             logger.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
+        //先保存到本地服务列表（其实就是一个concurrentHashMap）
+        //注册中心只是方便客户端定位到要调用那个服务端，但是具体服务端怎么定位到客户端要调用的方法还需要、
+        //自己来维护一个列表，便于查询
         serviceProvider.addServiceProvider(service);
+        //然后再向注册中心注册[我使用的注册中心是nacos]
         serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
         start();
     }
@@ -99,7 +105,7 @@ public class NettyServer implements RpcServer {
 
     @Override
     public void setSerializer(CommonSerializer serializer) {
-        this.serializer=serializer;
+        this.serializer = serializer;
     }
 
 }
