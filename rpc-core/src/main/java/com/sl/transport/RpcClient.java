@@ -9,11 +9,8 @@ import entity.RpcRequest;
  * Description: 客户端类通用接口
  */
 public interface RpcClient {
-    Object sendRequest(RpcRequest rpcRequest);
 
-    /**
-     * 设置序列化器
-     * @param serializer
-     */
-    void setSerializer(CommonSerializer serializer);
+    int DEFAULT_SERIALIZER = CommonSerializer.KRYO_SERIALIZER;
+
+    Object sendRequest(RpcRequest rpcRequest);
 }
