@@ -23,3 +23,7 @@ Package Type：标明这是一个调用请求还是调用相应<br>
 Serializer Type：标明使用的序列化器，这个客户端和服务端应当保持一致<br>
 Data Length：实际数据的长度，设置这个字段主要防止粘包<br>
 Data Bytes：经过序列化后的实际数据<br>
+
+
+## 一些概念的解释
+  <a href="https://www.nowcoder.com/discuss/588903?channel=-1&source_id=profile_follow_post_nctrack">查看这里</a>
